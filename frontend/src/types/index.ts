@@ -4,6 +4,14 @@ export interface Note {
   createdAt: string;
 }
 
+export interface Activity {
+  _id: string;
+  ticketId: string;
+  actionType: 'TICKET_CREATED' | 'STATUS_CHANGED' | 'PRIORITY_CHANGED' | 'NOTE_ADDED' | 'ASSIGNMENT_CHANGED';
+  description: string;
+  createdAt: string;
+}
+
 export interface Ticket {
   _id: string;
   ticketId: string;
@@ -12,7 +20,10 @@ export interface Ticket {
   subject: string;
   description: string;
   status: 'Open' | 'In Progress' | 'Closed';
+  priority: 'Low' | 'Medium' | 'High' | 'Critical';
+  assignedTo: string;
   notes: Note[];
+  activities?: Activity[];
   createdAt: string;
   updatedAt: string;
 }
@@ -34,4 +45,17 @@ export interface TicketsResponse {
   tickets: Ticket[];
   stats: Stats;
   pagination: Pagination;
+}
+
+export interface AnalyticsData {
+  totalTickets: number;
+  openTickets: number;
+  inProgressTickets: number;
+  closedTickets: number;
+  criticalTickets: number;
+  averageNotesPerTicket: number;
+  statusDistribution: { name: string; value: number }[];
+  priorityDistribution: { name: string; value: number }[];
+  agentWorkload: { name: string; tickets: number }[];
+  ticketCreationTrend: { date: string; tickets: number }[];
 }

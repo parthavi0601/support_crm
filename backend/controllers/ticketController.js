@@ -1,5 +1,6 @@
 const Ticket = require('../models/Ticket');
 const Note = require('../models/Note');
+const Activity = require('../models/Activity');
 
 const generateTicketId = async () => {
   const lastTicket = await Ticket.findOne({}, {}, { sort: { createdAt: -1 } });
@@ -11,7 +12,7 @@ const generateTicketId = async () => {
 
 const createTicket = async (req, res) => {
   try {
-    const { customerName, customerEmail, subject, description } = req.body;
+    const { customerName, customerEmail, subject, description, priority, assignedTo } = req.body;
 
     if (!customerName || !customerEmail || !subject || !description) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -30,6 +31,14 @@ const createTicket = async (req, res) => {
       customerEmail,
       subject,
       description,
+      priority: priority || 'Medium',
+      assignedTo: assignedTo || 'Unassigned',
+    });
+
+    await Activity.create({
+      ticketId,
+      actionType: 'TICKET_CREATED',
+      description: 'Ticket created',
     });
 
     res.status(201).json({
@@ -43,13 +52,13 @@ const createTicket = async (req, res) => {
 
 const getAllTickets = async (req, res) => {
   try {
-    const { search, status, page = 1, limit = 10, sort = 'latest' } = req.query;
+    const { search, status, priority, assignedTo, page = 1, limit = 10, sort = 'latest' } = req.query;
 
     const query = {};
 
-    if (status && status !== 'All') {
-      query.status = status;
-    }
+    if (status && status !== 'All') query.status = status;
+    if (priority && priority !== 'All') query.priority = priority;
+    if (assignedTo && assignedTo !== 'All Agents') query.assignedTo = assignedTo;
 
     if (search) {
       query.$or = [
@@ -61,16 +70,40 @@ const getAllTickets = async (req, res) => {
       ];
     }
 
-    const sortOrder = sort === 'oldest' ? 1 : -1;
     const skip = (parseInt(page) - 1) * parseInt(limit);
+    let tickets;
 
-    const [tickets, total] = await Promise.all([
-      Ticket.find(query)
+    if (sort === 'priority') {
+      tickets = await Ticket.aggregate([
+        { $match: query },
+        {
+          $addFields: {
+            priorityWeight: {
+              $switch: {
+                branches: [
+                  { case: { $eq: ['$priority', 'Critical'] }, then: 4 },
+                  { case: { $eq: ['$priority', 'High'] }, then: 3 },
+                  { case: { $eq: ['$priority', 'Medium'] }, then: 2 },
+                  { case: { $eq: ['$priority', 'Low'] }, then: 1 }
+                ],
+                default: 0
+              }
+            }
+          }
+        },
+        { $sort: { priorityWeight: -1, createdAt: -1 } },
+        { $skip: skip },
+        { $limit: parseInt(limit) }
+      ]);
+    } else {
+      const sortOrder = sort === 'oldest' ? 1 : -1;
+      tickets = await Ticket.find(query)
         .sort({ createdAt: sortOrder })
         .skip(skip)
-        .limit(parseInt(limit)),
-      Ticket.countDocuments(query),
-    ]);
+        .limit(parseInt(limit));
+    }
+
+    const total = await Ticket.countDocuments(query);
 
     const stats = await Ticket.aggregate([
       {
@@ -111,8 +144,9 @@ const getTicketById = async (req, res) => {
     }
 
     const notes = await Note.find({ ticketId: req.params.ticketId }).sort({ createdAt: 1 });
+    const activities = await Activity.find({ ticketId: req.params.ticketId }).sort({ createdAt: -1 });
 
-    res.json({ ...ticket.toObject(), notes });
+    res.json({ ...ticket.toObject(), notes, activities });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -120,7 +154,7 @@ const getTicketById = async (req, res) => {
 
 const updateTicket = async (req, res) => {
   try {
-    const { status, note } = req.body;
+    const { status, priority, assignedTo, note } = req.body;
     const { ticketId } = req.params;
 
     const ticket = await Ticket.findOne({ ticketId });
@@ -128,13 +162,42 @@ const updateTicket = async (req, res) => {
       return res.status(404).json({ message: 'Ticket not found' });
     }
 
-    if (status) {
+    if (status && status !== ticket.status) {
+      await Activity.create({
+        ticketId,
+        actionType: 'STATUS_CHANGED',
+        description: `Status changed from ${ticket.status} to ${status}`,
+      });
       ticket.status = status;
-      await ticket.save();
     }
+
+    if (priority && priority !== ticket.priority) {
+      await Activity.create({
+        ticketId,
+        actionType: 'PRIORITY_CHANGED',
+        description: `Priority changed from ${ticket.priority} to ${priority}`,
+      });
+      ticket.priority = priority;
+    }
+
+    if (assignedTo && assignedTo !== ticket.assignedTo) {
+      await Activity.create({
+        ticketId,
+        actionType: 'ASSIGNMENT_CHANGED',
+        description: `Assigned from ${ticket.assignedTo} to ${assignedTo}`,
+      });
+      ticket.assignedTo = assignedTo;
+    }
+
+    await ticket.save();
 
     if (note && note.trim()) {
       await Note.create({ ticketId, noteText: note.trim() });
+      await Activity.create({
+        ticketId,
+        actionType: 'NOTE_ADDED',
+        description: 'Note added to ticket',
+      });
     }
 
     res.json({ success: true });
@@ -145,12 +208,11 @@ const updateTicket = async (req, res) => {
 
 const getRecentActivity = async (req, res) => {
   try {
-    const recentTickets = await Ticket.find({})
-      .sort({ updatedAt: -1 })
-      .limit(5)
-      .select('ticketId customerName status createdAt updatedAt');
+    const recentActivities = await Activity.find({})
+      .sort({ createdAt: -1 })
+      .limit(5);
 
-    res.json(recentTickets);
+    res.json(recentActivities);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
