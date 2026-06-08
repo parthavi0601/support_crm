@@ -86,23 +86,26 @@ function SkeletonRow() {
 
 function Badge({ label, cfg }: { label: string; cfg: { color: string; bg: string } }) {
   return (
-    <Typography
-      variant="caption"
-      fontWeight={500}
-      sx={{
-        color: cfg.color,
-        px: 1.25,
-        py: 0.4,
-        borderRadius: 1.5,
-        bgcolor: cfg.bg,
-        display: 'inline-block',
-        lineHeight: 1.4,
-        whiteSpace: 'nowrap',
-        fontSize: '0.75rem',
-      }}
-    >
-      {label}
-    </Typography>
+    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.6 }}>
+      <Box sx={{ width: 5, height: 5, borderRadius: '50%', bgcolor: cfg.color, flexShrink: 0 }} />
+      <Typography
+        variant="caption"
+        fontWeight={600}
+        sx={{
+          color: cfg.color,
+          px: 1,
+          py: 0.35,
+          borderRadius: 1.25,
+          bgcolor: cfg.bg,
+          lineHeight: 1.3,
+          whiteSpace: 'nowrap',
+          fontSize: '0.6875rem',
+          letterSpacing: '0.01em',
+        }}
+      >
+        {label}
+      </Typography>
+    </Box>
   );
 }
 
@@ -153,21 +156,41 @@ export default function TicketTable({ tickets, loading }: TicketTableProps) {
                   key={ticket._id}
                   hover
                   onClick={() => nav(`/ticket/${ticket.ticketId}`)}
-                  sx={{ cursor: 'pointer' }}
+                  sx={{
+                    cursor: 'pointer',
+                    transition: 'background-color 0.12s ease',
+                    '&:hover .ticket-id-pill': {
+                      borderColor: isDark ? alpha('#5b6cf0', 0.4) : alpha('#5b6cf0', 0.3),
+                      bgcolor: isDark ? alpha('#5b6cf0', 0.12) : alpha('#5b6cf0', 0.06),
+                    },
+                  }}
                 >
                   <TableCell>
-                    <Typography
-                      variant="caption"
-                      fontWeight={600}
+                    <Box
+                      className="ticket-id-pill"
                       sx={{
-                        color: isDark ? '#7b8af5' : '#4a59d9',
-                        letterSpacing: '0.02em',
-                        fontFamily: 'ui-monospace, monospace',
-                        fontSize: '0.75rem',
+                        display: 'inline-flex',
+                        px: 1,
+                        py: 0.35,
+                        borderRadius: 1.25,
+                        border: `1px solid ${isDark ? alpha('#5b6cf0', 0.2) : alpha('#5b6cf0', 0.15)}`,
+                        bgcolor: isDark ? alpha('#5b6cf0', 0.08) : alpha('#5b6cf0', 0.04),
+                        transition: 'all 0.12s ease',
                       }}
                     >
-                      {ticket.ticketId}
-                    </Typography>
+                      <Typography
+                        variant="caption"
+                        fontWeight={600}
+                        sx={{
+                          color: isDark ? '#7b8af5' : '#4a59d9',
+                          letterSpacing: '0.03em',
+                          fontFamily: 'ui-monospace, monospace',
+                          fontSize: '0.6875rem',
+                        }}
+                      >
+                        {ticket.ticketId}
+                      </Typography>
+                    </Box>
                   </TableCell>
 
                   <TableCell>
