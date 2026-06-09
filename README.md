@@ -2,7 +2,7 @@
 
 A production-ready Customer Support Ticketing CRM System built with React (Vite), Node.js, Express, and MongoDB Atlas — featuring an **AI Assistant** powered by OpenAI and **automatic ticket creation from Gmail**.
 
-🔗 **Live Demo:** [Frontend on Vercel](https://your-frontend.vercel.app) · [Backend on Render](https://your-backend.onrender.com)
+🔗 **Live Demo:** [Frontend on Vercel](https://support-crm-gamma.vercel.app/) · [Backend on Render](https://support-crm-1-fqrl.onrender.com/)
 
 ---
 
