@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider, createTheme, CssBaseline, PaletteMode, Box } from '@mui/material';
@@ -104,10 +104,6 @@ export default function App() {
                 fontSize: '0.875rem',
                 boxShadow: 'none',
                 '&:hover': { boxShadow: 'none' },
-              },
-              containedPrimary: {
-                backgroundColor: '#5b6cf0',
-                '&:hover': { backgroundColor: '#4a59d9' },
               },
               outlined: {
                 borderColor: mode === 'light' ? '#d8dee8' : '#2a2a2a',

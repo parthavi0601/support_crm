@@ -2,7 +2,7 @@ const { fetchUnreadEmails, getMessageDetails, markAsRead, parseEmailToTicket } =
 const Ticket = require('../models/Ticket');
 const Activity = require('../models/Activity');
 
-const POLL_INTERVAL_MS = 60 * 1000; // 60 seconds
+const POLL_INTERVAL_MS = 60 * 1000;
 
 // Only process emails received AFTER the server started (Unix seconds)
 const POLL_START_TIME = Math.floor(Date.now() / 1000);
@@ -18,7 +18,7 @@ const generateTicketId = async () => {
   return `TKT-${String(nextNum).padStart(3, '0')}`;
 };
 
-async function pollEmails() {
+async function pollEmails(io) {
   try {
     // Only fetch unread emails received after server startup
     const messages = await fetchUnreadEmails(POLL_START_TIME);
@@ -44,7 +44,7 @@ async function pollEmails() {
 
         const ticketId = await generateTicketId();
 
-        await Ticket.create({
+        const newTicket = await Ticket.create({
           ticketId,
           customerName: customerName || 'Unknown Sender',
           customerEmail,
@@ -64,10 +64,15 @@ async function pollEmails() {
         processedIds.add(msg.id);
 
         console.log(`[EmailPoller] ✅ Created ticket ${ticketId} from email: "${subject}" by ${customerEmail}`);
+
+        // Emit WebSocket event so frontend can refresh silently
+        if (io) {
+          io.emit('new_ticket', newTicket);
+        }
       } catch (msgError) {
         console.error(`[EmailPoller] ❌ Error processing message ${msg.id}:`, msgError.message);
         // Still mark as read to avoid reprocessing broken emails repeatedly
-        try { await markAsRead(msg.id); } catch (_) {}
+        try { await markAsRead(msg.id); } catch (_) { }
         processedIds.add(msg.id);
       }
     }
@@ -81,7 +86,7 @@ async function pollEmails() {
   }
 }
 
-function startEmailPoller() {
+function startEmailPoller(io) {
   const gmailConfigured =
     process.env.GMAIL_CREDENTIALS &&
     process.env.GMAIL_CREDENTIALS !== 'your_gmail_credentials_json_here' &&
@@ -96,8 +101,8 @@ function startEmailPoller() {
   console.log(`[EmailPoller] 🚀 Started — polling every ${POLL_INTERVAL_MS / 1000}s`);
 
   // Run once immediately on startup, then on interval
-  pollEmails();
-  setInterval(pollEmails, POLL_INTERVAL_MS);
+  pollEmails(io);
+  setInterval(() => pollEmails(io), POLL_INTERVAL_MS);
 }
 
 module.exports = { startEmailPoller };

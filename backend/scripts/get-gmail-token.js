@@ -1,22 +1,3 @@
-/**
- * Gmail OAuth2 Token Generator
- * 
- * Run this ONCE locally to get your refresh token for Gmail API access.
- * 
- * Prerequisites:
- * 1. Go to https://console.cloud.google.com/
- * 2. Create a new project (or use existing)
- * 3. Enable "Gmail API" (APIs & Services > Library)
- * 4. Create OAuth 2.0 credentials:
- *    - APIs & Services > Credentials > Create Credentials > OAuth client ID
- *    - Application type: Desktop app
- *    - Download the JSON file
- * 5. Paste the contents of the downloaded JSON into GMAIL_CREDENTIALS in .env
- * 6. Run: node scripts/get-gmail-token.js
- * 7. Authorize in the browser, copy the code back to terminal
- * 8. Copy the refresh_token printed to your terminal into GMAIL_REFRESH_TOKEN in .env
- * 9. Also add both vars to Render's environment variables dashboard
- */
 
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const { google } = require('googleapis');

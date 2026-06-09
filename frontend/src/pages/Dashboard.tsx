@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import {
   Box,
   Typography,
@@ -8,6 +9,7 @@ import {
   Paper,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   CircularProgress,
   Stack,
@@ -126,6 +128,23 @@ export default function Dashboard() {
       .catch(() => setActivity([]))
       .finally(() => setActLoading(false));
   }, []);
+
+  // WebSocket connection for real-time updates
+  useEffect(() => {
+    const backendUrl = (import.meta as any).env.VITE_API_URL.replace('/api', '');
+    const socket = io(backendUrl);
+
+    socket.on('new_ticket', () => {
+      fetchTickets();
+      getRecentActivity()
+        .then((res) => setActivity(res.data))
+        .catch(() => setActivity([]));
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [fetchTickets]);
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => setPage(value);
 
@@ -265,6 +284,7 @@ export default function Dashboard() {
             <Box sx={{ px: 2.5, pt: 2, pb: 1.5 }}>
               <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ md: 'center' }}>
                 <TextField
+                  variant="outlined"
                   size="small"
                   placeholder="Search by ID, customer, subject…"
                   value={search}
@@ -468,23 +488,22 @@ export default function Dashboard() {
                   const isLast = i === activity.length - 1;
 
                   return (
-                    <ListItem
-                      key={item._id}
-                      button
-                      onClick={() => nav(`/ticket/${item.ticketId}`)}
-                      sx={{
-                        px: 2.5,
-                        py: 1.5,
-                        alignItems: 'flex-start',
-                        gap: 1.5,
-                        position: 'relative',
-                        transition: 'background-color 0.15s ease',
-                        '&:hover': {
-                          bgcolor: isDark ? alpha('#5b6cf0', 0.06) : alpha('#5b6cf0', 0.04),
-                        },
-                      }}
-                    >
-                      <Box sx={{ position: 'relative', flexShrink: 0, pt: 0.25 }}>
+                    <ListItem disablePadding key={item._id} sx={{ mb: 1 }}>
+                      <ListItemButton
+                        onClick={() => nav(`/ticket/${item.ticketId}`)}
+                        sx={{
+                          px: 2.5,
+                          py: 1.5,
+                          alignItems: 'flex-start',
+                          gap: 1.5,
+                          position: 'relative',
+                          transition: 'background-color 0.15s ease',
+                          '&:hover': {
+                            bgcolor: isDark ? alpha('#5b6cf0', 0.06) : alpha('#5b6cf0', 0.04),
+                          },
+                        }}
+                      >
+                        <Box sx={{ position: 'relative', flexShrink: 0, pt: 0.25 }}>
                         <Box
                           sx={{
                             width: 30,
@@ -571,6 +590,7 @@ export default function Dashboard() {
                           </Box>
                         }
                       />
+                      </ListItemButton>
                     </ListItem>
                   );
                 })}
