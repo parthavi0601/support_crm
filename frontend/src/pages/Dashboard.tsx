@@ -243,12 +243,13 @@ export default function Dashboard() {
 
       <Grid container spacing={2.5}>
         {/* Tickets panel */}
-        <Grid item xs={12} lg={8} xl={9}>
+        <Grid item xs={12} lg={8} xl={9} sx={{ minWidth: 0 }}>
           <Paper
             variant="outlined"
             sx={{
               borderRadius: 3,
               overflow: 'hidden',
+              width: '100%',
               boxShadow: isDark
                 ? '0 8px 32px rgba(0,0,0,0.3)'
                 : '0 8px 32px rgba(26,35,50,0.06)',
@@ -424,7 +425,7 @@ export default function Dashboard() {
         </Grid>
 
         {/* Activity panel */}
-        <Grid item xs={12} lg={4} xl={3}>
+        <Grid item xs={12} lg={4} xl={3} sx={{ minWidth: 0 }}>
           <Paper
             variant="outlined"
             sx={{

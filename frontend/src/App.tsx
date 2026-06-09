@@ -299,7 +299,7 @@ export default function App() {
           <Box
             component="main"
             className="app-main"
-            sx={{ flexGrow: 1, overflow: 'auto', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+            sx={{ flexGrow: 1, overflow: 'auto', minHeight: '100vh', display: 'flex', flexDirection: 'column', minWidth: 0 }}
           >
             {/* Mobile Header */}
             <Box 
