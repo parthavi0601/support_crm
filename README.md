@@ -1,135 +1,162 @@
-# SupportDesk CRM (Advanced Edition)
+# SupportDesk CRM
 
-A production-ready Customer Support Ticketing CRM System built with React (Vite), Node.js, Express, and MongoDB Atlas. 
+A production-ready Customer Support Ticketing CRM System built with React (Vite), Node.js, Express, and MongoDB Atlas — featuring an **AI Assistant** powered by OpenAI and **automatic ticket creation from Gmail**.
 
-This repository includes advanced CRM features like **Priority Management**, **Activity Timelines**, **Ticket Assignment**, and an **Analytics Dashboard**.
-
----
-
-## 🌟 Features
-
-- **Ticket Creation**: Easily create support tickets with standard details plus configurable priorities and optional agent assignment.
-- **Search & Filtering**: Full-text search across all fields and powerful filters for Status, Priority, and Assigned Agent.
-- **Priority Management**: Tag tickets with Low, Medium, High, or Critical priorities. Priority-based sorting (Critical first).
-- **Ticket Assignment**: Delegate support requests by assigning tickets directly to specific team members (Agents).
-- **Activity Timeline**: A comprehensive logging system that automatically tracks every lifecycle event (creation, status changes, priority changes, reassignment, and new notes) displayed in a beautiful vertical timeline.
-- **Analytics Dashboard**: Get instant insights using interactive Recharts displaying Ticket Status Distribution, Priority Distribution, Agent Workloads, and a 14-day Creation Trend.
+🔗 **Live Demo:** [Frontend on Vercel](https://your-frontend.vercel.app) · [Backend on Render](https://your-backend.onrender.com)
 
 ---
 
-## 🛠 Architecture & Tech Stack
+## Features
 
-**Frontend:**
-- **Framework**: React 19 + TypeScript + Vite
-- **UI Library**: Material UI (MUI v6)
-- **Routing**: React Router DOM
-- **Charts**: Recharts
-- **Networking**: Axios
-- **Notifications**: react-hot-toast
+### Core
+- **Ticket Management** — Create, view, update, and search support tickets with full pagination
+- **Priority Management** — Low / Medium / High / Critical tagging with priority-based sorting
+- **Status Workflow** — Open → In Progress → Closed with close confirmation guard
+- **Ticket Assignment** — Delegate tickets to specific support agents
+- **Notes & Communication Timeline** — Internal notes logged with timestamps in a vertical timeline
+- **Activity History** — Every lifecycle event (creation, status/priority change, reassignment, notes) auto-logged
 
-**Backend:**
-- **Runtime**: Node.js + Express.js
-- **Database**: MongoDB Atlas via Mongoose
-- **Config**: dotenv, cors
+### AI Assistant (OpenAI GPT-4o-mini)
+Surfaced inside each Ticket Detail page:
+- **Auto-Summary** — Generates a 2-3 sentence plain-English summary of the issue
+- **Priority Suggestion** — AI recommends a priority level with reasoning; one-click "Apply" to set it
+- **Category Detection** — Classifies tickets (Billing, Technical Issue, Bug Report, etc.) with confidence level
+- **Response Drafting** — Writes a professional customer reply; one-click copy to clipboard
 
----
+### Gmail Email Integration
+- Polls a configured Gmail inbox every 5 minutes for unread emails
+- Auto-creates a ticket from each new email (parses sender name, email, subject, body)
+- Marks processed emails as read
+- Only processes emails received **after** server startup (ignores old inbox)
 
-## 🗄 Database Schema
-
-We utilize three core Mongoose Models to structure data efficiently:
-
-### `Ticket Model`
-- `ticketId` (String, Unique, Auto-generated)
-- `customerName` (String)
-- `customerEmail` (String)
-- `subject` (String)
-- `description` (String)
-- `status` (Enum: 'Open', 'In Progress', 'Closed' | Default: 'Open')
-- `priority` (Enum: 'Low', 'Medium', 'High', 'Critical' | Default: 'Medium')
-- `assignedTo` (String | Default: 'Unassigned')
-- `createdAt` & `updatedAt` (Timestamps)
-
-### `Note Model`
-- `ticketId` (String, Reference to Ticket)
-- `noteText` (String)
-- `createdAt` & `updatedAt` (Timestamps)
-
-### `Activity Model`
-- `ticketId` (String, Reference to Ticket)
-- `actionType` (Enum: 'TICKET_CREATED', 'STATUS_CHANGED', 'PRIORITY_CHANGED', 'NOTE_ADDED', 'ASSIGNMENT_CHANGED')
-- `description` (String)
-- `createdAt` & `updatedAt` (Timestamps)
+### UI/UX
+- Dark mode (true black `#0a0a0a`) and light mode with a toggle
+- Responsive layout with a persistent sidebar
+- MUI v6 component library with a custom design system
 
 ---
 
-## 📡 API Documentation
+## Tech Stack
 
-### `POST /api/tickets`
-Create a new ticket. Auto-generates the ticket ID and logs a `TKT-CREATED` activity.
-- **Body**: `{ customerName, customerEmail, subject, description, priority, assignedTo }`
-- **Response**: `{ ticketId, createdAt }`
-
-### `GET /api/tickets`
-Fetch all tickets with pagination, search, and filtering.
-- **Query Params**: `?search=&status=Open&priority=Critical&assignedTo=John&sort=priority&page=1&limit=10`
-- **Response**: `{ tickets: [...], stats: {...}, pagination: {...} }`
-
-### `GET /api/tickets/:ticketId`
-Fetch complete details for a single ticket, including its full Note history and Activity Timeline.
-- **Response**: `{ ticketId, subject, status, priority, assignedTo, notes: [...], activities: [...] }`
-
-### `PUT /api/tickets/:ticketId`
-Update a ticket's status, priority, or assignment, and optionally add a new note. Auto-generates corresponding activity logs for any changed fields.
-- **Body**: `{ status, priority, assignedTo, note }`
-- **Response**: `{ success: true }`
-
-### `GET /api/analytics`
-Fetch aggregate analytics data for the dashboard.
-- **Response**: `{ totalTickets, openTickets, criticalTickets, statusDistribution, priorityDistribution, agentWorkload, ticketCreationTrend, ... }`
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19 + TypeScript + Vite |
+| UI Library | Material UI (MUI v6) |
+| Routing | React Router DOM |
+| Networking | Axios |
+| Notifications | react-hot-toast |
+| Backend | Node.js + Express.js |
+| Database | MongoDB Atlas (Mongoose) |
+| AI | OpenAI API (`gpt-4o-mini`) |
+| Email | Gmail API (OAuth2 via `googleapis`) |
 
 ---
 
-## 📸 Screenshots
+## Database Schema
 
-*(Replace these placeholder links with actual screenshots of your deployed app)*
+### `Ticket`
+| Field | Type | Notes |
+|-------|------|-------|
+| `ticketId` | String | Auto-generated (TKT-001, TKT-002…) |
+| `customerName` | String | Required |
+| `customerEmail` | String | Required, validated |
+| `subject` | String | Required |
+| `description` | String | Required |
+| `status` | Enum | Open / In Progress / Closed |
+| `priority` | Enum | Low / Medium / High / Critical |
+| `assignedTo` | String | Default: Unassigned |
+| `createdAt` / `updatedAt` | Timestamps | Auto |
 
-- **Dashboard**: `[Dashboard Screenshot]`
-- **Ticket Details**: `[Ticket Details Screenshot]`
-- **Activity Timeline**: `[Activity Timeline Screenshot]`
-- **Analytics Dashboard**: `[Analytics Dashboard Screenshot]`
+### `Note`
+`ticketId`, `noteText`, `createdAt`
+
+### `Activity`
+`ticketId`, `actionType` (TICKET_CREATED / STATUS_CHANGED / PRIORITY_CHANGED / NOTE_ADDED / ASSIGNMENT_CHANGED), `description`, `createdAt`
 
 ---
 
-## 🚀 Deployment Instructions
+## API Reference
+
+### Tickets
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/tickets` | Create a ticket |
+| `GET` | `/api/tickets` | List tickets (search, filter, paginate) |
+| `GET` | `/api/tickets/:ticketId` | Get ticket + notes + activities |
+| `PUT` | `/api/tickets/:ticketId` | Update status / priority / assignee / add note |
+| `GET` | `/api/tickets/activity` | Recent activity feed |
+
+**Query params for GET /api/tickets:**
+`?search=&status=Open&priority=Critical&assignedTo=John&sort=priority&page=1&limit=10`
+
+### AI Assistant
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/ai/analyze` | Run all 4 AI analyses on a ticket |
+
+**Body:** `{ subject, description, notes[] }`  
+**Response:** `{ summary, priority: { priority, reason }, response, category: { category, confidence } }`
+
+---
+
+## Deployment
+
+### Prerequisites — Environment Variables
+
+**Backend (Render):**
+```
+PORT=5000
+MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/crm
+OPENAI_API_KEY=sk-...
+GMAIL_CREDENTIALS={"installed":{"client_id":"...","client_secret":"...",...}}
+GMAIL_REFRESH_TOKEN=1//...
+```
+
+**Frontend (Vercel):**
+```
+VITE_API_URL=https://your-backend.onrender.com/api
+```
 
 ### Backend → Render
-
-1. Push backend code to GitHub.
-2. Create a new **Web Service** on [render.com](https://render.com).
-3. Set **Build Command:** `npm install`
-4. Set **Start Command:** `node server.js`
-5. Add environment variables:
-   - `PORT`: `5000`
-   - `MONGO_URI`: `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/support_crm?retryWrites=true&w=majority`
+1. Push to GitHub
+2. New **Web Service** on [render.com](https://render.com)
+3. **Root Directory:** `backend`
+4. **Build Command:** `npm install`
+5. **Start Command:** `node server.js`
+6. Add all backend environment variables above
 
 ### Frontend → Vercel
-
-1. Push frontend code to GitHub.
-2. Import project on [vercel.com](https://vercel.com).
-3. Set environment variable:
-   - `VITE_API_URL`: `https://your-backend.onrender.com/api` (The Render URL)
-4. Deploy — Vercel automatically detects the Vite configuration.
+1. Import repo on [vercel.com](https://vercel.com)
+2. **Root Directory:** `frontend`
+3. **Framework Preset:** Vite (auto-detected)
+4. Add `VITE_API_URL` environment variable
+5. Deploy
 
 ### Database → MongoDB Atlas
-
-1. Create a free cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas).
-2. Create a Database User and save the credentials.
-3. Under Network Access, whitelist `0.0.0.0/0` (Allow access from anywhere) to ensure Render can connect.
-4. Copy the connection string to your `MONGO_URI` variable.
+1. Create free cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas)
+2. Network Access → Whitelist `0.0.0.0/0`
+3. Copy connection string → `MONGO_URI`
 
 ---
 
-## 💻 Run Locally
+## Gmail Integration Setup (One-Time)
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → **Enable Gmail API**
+2. Create **OAuth 2.0 Credentials** → Application type: **Desktop app** → Download JSON
+3. Paste the JSON (minified, single line) as `GMAIL_CREDENTIALS` in your `.env`
+4. Add `vidyag2504@gmail.com` as a **Test User** on the OAuth consent screen
+5. Run the token generator:
+   ```bash
+   cd backend
+   node scripts/get-gmail-token.js
+   ```
+6. Authorize in the browser → copy the auth code → paste in terminal
+7. Copy the printed `GMAIL_REFRESH_TOKEN` into `.env` and Render environment variables
+8. Restart server — email polling starts automatically
+
+---
+
+## Run Locally
 
 ### 1. Clone & Install
 ```bash
@@ -137,18 +164,20 @@ git clone <repo-url>
 cd datastraw
 ```
 
-### 2. Backend Setup
+### 2. Backend
 ```bash
 cd backend
 npm install
-# Create .env and set PORT=5000 and MONGO_URI
+# Copy .env.example to .env and fill in values
 npm run dev
+# Server runs on http://localhost:5000
 ```
 
-### 3. Frontend Setup
+### 3. Frontend
 ```bash
 cd frontend
 npm install
-# Create .env and set VITE_API_URL=http://localhost:5000/api
+# Copy .env.example to .env → set VITE_API_URL=http://localhost:5000/api
 npm run dev
+# App runs on http://localhost:5173
 ```
