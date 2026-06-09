@@ -60,7 +60,7 @@ function VintageTicketCard({
         width: '100%',
         maxWidth: '100%',
         minWidth: 0,
-        height: VINTAGE_TICKET_HEIGHT,
+        height: { xs: 80, sm: VINTAGE_TICKET_HEIGHT },
         boxSizing: 'border-box',
         filter: isDark
           ? 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))'
@@ -73,13 +73,13 @@ function VintageTicketCard({
           width: '100%',
           maxWidth: '100%',
           minWidth: 0,
-          height: VINTAGE_TICKET_HEIGHT,
+          height: { xs: 80, sm: VINTAGE_TICKET_HEIGHT },
           boxSizing: 'border-box',
           display: 'flex',
           borderRadius: '6px',
           bgcolor: vintagePaper,
           border: `1px solid ${isDark ? divider : alpha(palette.main, 0.18)}`,
-          overflow: 'visible',
+          overflow: 'hidden',
           backgroundImage: isDark
             ? `repeating-linear-gradient(
                 0deg,
@@ -95,24 +95,32 @@ function VintageTicketCard({
                 ${alpha('#000', 0.012)} 2px,
                 ${alpha('#000', 0.012)} 4px
               )`,
-          '&::before': {
-            ...notchSx,
-            left: -7,
-            borderRightColor: 'transparent',
-            boxShadow: `inset -2px 0 0 ${alpha(palette.main, 0.15)}`,
+          // Hide notch circles on mobile — they overflow 7px outside card edges
+          '@media (max-width: 599px)': {
+            '&::before': { display: 'none' },
+            '&::after': { display: 'none' },
           },
-          '&::after': {
-            ...notchSx,
-            right: -7,
-            borderLeftColor: 'transparent',
-            boxShadow: `inset 2px 0 0 ${alpha(palette.main, 0.15)}`,
+          '@media (min-width: 600px)': {
+            overflow: 'visible',
+            '&::before': {
+              ...notchSx,
+              left: -7,
+              borderRightColor: 'transparent',
+              boxShadow: `inset -2px 0 0 ${alpha(palette.main, 0.15)}`,
+            },
+            '&::after': {
+              ...notchSx,
+              right: -7,
+              borderLeftColor: 'transparent',
+              boxShadow: `inset 2px 0 0 ${alpha(palette.main, 0.15)}`,
+            },
           },
         }}
       >
         {/* Stub */}
         <Box
           sx={{
-            width: VINTAGE_TICKET_STUB_WIDTH,
+            width: { xs: 44, sm: VINTAGE_TICKET_STUB_WIDTH },
             flexShrink: 0,
             display: 'flex',
             alignItems: 'center',
@@ -125,8 +133,8 @@ function VintageTicketCard({
         >
           <Box
             sx={{
-              width: 34,
-              height: 34,
+              width: { xs: 28, sm: 34 },
+              height: { xs: 28, sm: 34 },
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
@@ -134,7 +142,7 @@ function VintageTicketCard({
               bgcolor: isDark ? alpha(palette.main, 0.2) : alpha(palette.main, 0.12),
               color: palette.main,
               border: `1.5px solid ${alpha(palette.main, 0.35)}`,
-              '& .MuiSvgIcon-root': { fontSize: 18 },
+              '& .MuiSvgIcon-root': { fontSize: { xs: 15, sm: 18 } },
             }}
           >
             {icon}
@@ -145,14 +153,14 @@ function VintageTicketCard({
         <Box
           sx={{
             flex: '1 1 0',
-            px: 1.75,
+            px: { xs: 1.25, sm: 1.75 },
             py: 0,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             minWidth: 0,
             width: 0,
-            height: VINTAGE_TICKET_HEIGHT,
+            height: { xs: 80, sm: VINTAGE_TICKET_HEIGHT },
             overflow: 'hidden',
           }}
         >
@@ -185,7 +193,7 @@ function VintageTicketCard({
               color: 'text.primary',
               fontFeatureSettings: '"tnum"',
               fontFamily: '"Inter", ui-monospace, monospace',
-              fontSize: '1.75rem',
+              fontSize: { xs: '1.4rem', sm: '1.75rem' },
             }}
           >
             {value ?? 0}

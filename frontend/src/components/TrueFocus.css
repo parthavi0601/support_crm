@@ -23,6 +23,13 @@
   user-select: none;
 }
 
+@media (max-width: 600px) {
+  .focus-word {
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+  }
+}
+
 .focus-word.active {
   filter: blur(0);
 }

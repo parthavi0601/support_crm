@@ -19,6 +19,22 @@ import {
 import { ChevronRight as ChevronRightIcon } from '@mui/icons-material';
 import { Ticket } from '../types';
 
+// ─── Mobile card skeleton ────────────────────────────────────────────────────
+function MobileSkeletonCard() {
+  return (
+    <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Skeleton variant="circular" width={36} height={36} />
+        <Box sx={{ flex: 1 }}>
+          <Skeleton height={14} width="60%" sx={{ mb: 0.5 }} />
+          <Skeleton height={12} width="80%" />
+        </Box>
+        <Skeleton variant="rounded" height={20} width={56} />
+      </Box>
+    </Box>
+  );
+}
+
 interface TicketTableProps {
   tickets: Ticket[];
   loading: boolean;
@@ -116,8 +132,115 @@ export default function TicketTable({ tickets, loading }: TicketTableProps) {
 
   const headers = ['Ticket ID', 'Customer', 'Email', 'Subject', 'Priority', 'Status', 'Assigned To', 'Created', ''];
 
+  // ─── Mobile card list ────────────────────────────────────────────────────
+  const mobileList = (
+    <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+      {loading
+        ? Array.from({ length: 5 }).map((_, i) => <MobileSkeletonCard key={i} />)
+        : tickets.length === 0
+        ? (
+          <Box sx={{ py: 8, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary" fontWeight={500}>No tickets found</Typography>
+            <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 0.5 }}>Try adjusting your search or filters</Typography>
+          </Box>
+        )
+        : tickets.map((ticket) => {
+            const pCfg = isDark ? PRIORITY_CONFIG_DARK[ticket.priority] : PRIORITY_CONFIG[ticket.priority];
+            const sCfg = isDark ? STATUS_CONFIG_DARK[ticket.status] : STATUS_CONFIG[ticket.status];
+            const avatarColor = getAvatarColor(ticket.customerName);
+            return (
+              <Box
+                key={ticket._id}
+                onClick={() => nav(`/ticket/${ticket.ticketId}`)}
+                sx={{
+                  px: 2,
+                  py: 1.5,
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
+                  cursor: 'pointer',
+                  overflow: 'hidden',
+                  transition: 'background-color 0.12s ease',
+                  '&:hover': {
+                    bgcolor: isDark ? alpha('#5b6cf0', 0.06) : alpha('#5b6cf0', 0.04),
+                  },
+                }}
+              >
+                {/* Row 1: avatar + name + ticket ID badge */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75, minWidth: 0 }}>
+                  <Avatar
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      bgcolor: alpha(avatarColor, isDark ? 0.85 : 1),
+                      fontSize: '0.6rem',
+                      fontWeight: 600,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {getInitials(ticket.customerName)}
+                  </Avatar>
+                  <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                    <Typography variant="body2" fontWeight={600} noWrap sx={{ fontSize: '0.8rem', lineHeight: 1.3 }}>
+                      {ticket.customerName}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" noWrap sx={{ fontSize: '0.7rem', display: 'block' }}>
+                      {ticket.customerEmail}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      px: 0.75,
+                      py: 0.3,
+                      borderRadius: 1,
+                      border: `1px solid ${isDark ? alpha('#5b6cf0', 0.25) : alpha('#5b6cf0', 0.2)}`,
+                      bgcolor: isDark ? alpha('#5b6cf0', 0.1) : alpha('#5b6cf0', 0.05),
+                      flexShrink: 0,
+                      width: 60,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      fontWeight={600}
+                      noWrap
+                      sx={{ color: isDark ? '#7b8af5' : '#4a59d9', fontFamily: 'ui-monospace, monospace', fontSize: '0.6rem', width: '100%' }}
+                    >
+                      {ticket.ticketId}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Row 2: subject */}
+                <Typography
+                  variant="body2"
+                  noWrap
+                  sx={{ fontSize: '0.775rem', fontWeight: 500, color: 'text.primary', mb: 0.75, pl: 0.25 }}
+                >
+                  {ticket.subject}
+                </Typography>
+
+                {/* Row 3: badges + date + arrow */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+                  {sCfg && <Badge label={ticket.status} cfg={sCfg} />}
+                  {pCfg && <Badge label={ticket.priority} cfg={pCfg} />}
+                  <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.675rem', ml: 'auto' }}>
+                    {formatDate(ticket.createdAt)}
+                  </Typography>
+                  <ChevronRightIcon sx={{ fontSize: 16, color: 'text.disabled', flexShrink: 0 }} />
+                </Box>
+              </Box>
+            );
+          })
+      }
+    </Box>
+  );
+
   return (
-    <TableContainer sx={{ borderRadius: 0, border: 'none' }}>
+    <>
+      {mobileList}
+      <TableContainer sx={{ borderRadius: 0, border: 'none', display: { xs: 'none', md: 'block' } }}>
       <Table sx={{ minWidth: 800 }} aria-label="tickets table">
         <TableHead>
           <TableRow>
@@ -285,5 +408,6 @@ export default function TicketTable({ tickets, loading }: TicketTableProps) {
         </TableBody>
       </Table>
     </TableContainer>
+    </>
   );
 }

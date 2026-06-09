@@ -287,7 +287,7 @@ export default function App() {
       <CssBaseline />
       <BrowserRouter>
         <Box
-          sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}
+          sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default', overflowX: 'hidden', maxWidth: '100vw' }}
           data-theme={mode}
         >
           <Sidebar 
@@ -299,7 +299,7 @@ export default function App() {
           <Box
             component="main"
             className="app-main"
-            sx={{ flexGrow: 1, overflow: 'auto', minHeight: '100vh', display: 'flex', flexDirection: 'column', minWidth: 0 }}
+            sx={{ flexGrow: 1, overflow: 'auto', overflowX: 'hidden', minHeight: '100vh', display: 'flex', flexDirection: 'column', minWidth: 0 }}
           >
             {/* Mobile Header */}
             <Box 
@@ -309,7 +309,8 @@ export default function App() {
                 py: 1.5, 
                 alignItems: 'center', 
                 borderBottom: `1px solid ${theme.palette.divider}`,
-                bgcolor: 'background.paper'
+                bgcolor: 'background.paper',
+                gap: 1,
               }}
             >
               <IconButton 
@@ -317,13 +318,28 @@ export default function App() {
                 aria-label="open drawer" 
                 edge="start" 
                 onClick={() => setMobileOpen(true)}
-                sx={{ mr: 2 }}
+                sx={{ mr: 1 }}
               >
                 <MenuIcon />
               </IconButton>
-              <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, fontSize: '1.1rem' }}>
+              <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, fontSize: '1rem', flex: 1 }}>
                 SupportDesk
               </Typography>
+              <IconButton
+                onClick={colorMode.toggleColorMode}
+                size="small"
+                sx={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 2,
+                  border: `1px solid ${theme.palette.divider}`,
+                }}
+              >
+                {mode === 'dark'
+                  ? <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                  : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                }
+              </IconButton>
             </Box>
 
             <Routes>

@@ -160,7 +160,7 @@ export default function Dashboard() {
   };
 
   return (
-    <Box sx={{ p: { xs: 2.5, md: 3.5, lg: 4 }, maxWidth: 1440, mx: 'auto' }}>
+    <Box sx={{ p: { xs: 1.75, sm: 2.5, md: 3.5, lg: 4 }, maxWidth: 1440, mx: 'auto', overflowX: 'hidden', width: '100%', boxSizing: 'border-box' }}>
       {/* Header */}
       <Box
         sx={{
@@ -168,26 +168,28 @@ export default function Dashboard() {
           justifyContent: 'space-between',
           alignItems: { xs: 'flex-start', sm: 'center' },
           flexDirection: { xs: 'column', sm: 'row' },
-          gap: 2.5,
-          mb: 3,
-          pb: 3,
+          gap: { xs: 1.5, sm: 2.5 },
+          mb: { xs: 2, md: 3 },
+          pb: { xs: 2, md: 3 },
           borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >
-        <Box>
-          <TrueFocus
-            sentence="Support Dashboard"
-            manualMode={false}
-            blurAmount={5}
-            borderColor={theme.palette.primary.main}
-            glowColor={alpha(theme.palette.primary.main, 0.6)}
-            animationDuration={1}
-            pauseBetweenAnimations={1}
-          />
+        <Box sx={{ minWidth: 0, flex: 1 }}>
+          <Box sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }}>
+            <TrueFocus
+              sentence="Support Dashboard"
+              manualMode={false}
+              blurAmount={5}
+              borderColor={theme.palette.primary.main}
+              glowColor={alpha(theme.palette.primary.main, 0.6)}
+              animationDuration={1}
+              pauseBetweenAnimations={1}
+            />
+          </Box>
           <Typography
             variant="body2"
             color="text.secondary"
-            sx={{ mt: 1.25, maxWidth: 440, lineHeight: 1.6, fontSize: '0.875rem' }}
+            sx={{ mt: 1, maxWidth: 440, lineHeight: 1.6, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
           >
             Manage and track all your customer support tickets
           </Typography>
@@ -198,9 +200,10 @@ export default function Dashboard() {
           onClick={() => nav('/create')}
           sx={{
             borderRadius: 2.5,
-            px: 2.75,
+            px: { xs: 2, sm: 2.75 },
             py: 1.1,
             flexShrink: 0,
+            alignSelf: { xs: 'flex-start', sm: 'center' },
             boxShadow: isDark
               ? `0 4px 14px ${alpha(theme.palette.primary.main, 0.35)}`
               : `0 4px 14px ${alpha(theme.palette.primary.main, 0.25)}`,
@@ -220,13 +223,13 @@ export default function Dashboard() {
         sx={{
           display: 'grid',
           gridTemplateColumns: {
-            xs: '1fr',
-            sm: 'repeat(2, minmax(0, 1fr))',
+            xs: 'repeat(2, minmax(0, 1fr))',
             md: 'repeat(4, minmax(0, 1fr))',
           },
-          gap: 2,
-          mb: 3,
+          gap: { xs: 1.25, sm: 2 },
+          mb: { xs: 2, md: 3 },
           width: '100%',
+          boxSizing: 'border-box',
         }}
       >
         {[
@@ -241,7 +244,7 @@ export default function Dashboard() {
         ))}
       </Box>
 
-      <Grid container spacing={2.5}>
+      <Grid container columnSpacing={{ xs: 1.5, sm: 2.5 }} rowSpacing={{ xs: 2, sm: 2.5 }}>
         {/* Tickets panel */}
         <Grid item xs={12} lg={8} xl={9} sx={{ minWidth: 0 }}>
           <Paper
@@ -282,17 +285,16 @@ export default function Dashboard() {
               </Box>
             </Box>
 
-            <Box sx={{ px: 2.5, pt: 2, pb: 1.5 }}>
-              <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ md: 'center' }}>
+            <Box sx={{ px: { xs: 1.5, sm: 2.5 }, pt: { xs: 1.5, sm: 2 }, pb: 1.5 }}>
+              <Stack direction="column" spacing={1.5}>
                 <TextField
                   variant="outlined"
                   size="small"
                   placeholder="Search by ID, customer, subject…"
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                  fullWidth
                   sx={{
-                    flex: 1,
-                    maxWidth: { md: 300 },
                     '& .MuiOutlinedInput-root': {
                       bgcolor: isDark ? alpha('#0e1520', 0.5) : '#fff',
                     },
@@ -306,10 +308,18 @@ export default function Dashboard() {
                   }}
                 />
 
-                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ flex: 1 }}>
-                  <FormControl size="small" sx={selectSx}>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(3, minmax(0, 1fr))' },
+                    gap: 1,
+                  }}
+                >
+                  <FormControl size="small" fullWidth>
                     <InputLabel>Priority</InputLabel>
-                    <Select value={priority} label="Priority" onChange={(e: SelectChangeEvent) => { setPriority(e.target.value); setPage(1); }}>
+                    <Select value={priority} label="Priority" onChange={(e: SelectChangeEvent) => { setPriority(e.target.value); setPage(1); }}
+                      sx={{ bgcolor: isDark ? alpha('#0e1520', 0.5) : '#fff' }}
+                    >
                       <MenuItem value="All">All</MenuItem>
                       <MenuItem value="Low">Low</MenuItem>
                       <MenuItem value="Medium">Medium</MenuItem>
@@ -318,9 +328,11 @@ export default function Dashboard() {
                     </Select>
                   </FormControl>
 
-                  <FormControl size="small" sx={selectSx}>
+                  <FormControl size="small" fullWidth>
                     <InputLabel>Agent</InputLabel>
-                    <Select value={assignedTo} label="Agent" onChange={(e: SelectChangeEvent) => { setAssignedTo(e.target.value); setPage(1); }}>
+                    <Select value={assignedTo} label="Agent" onChange={(e: SelectChangeEvent) => { setAssignedTo(e.target.value); setPage(1); }}
+                      sx={{ bgcolor: isDark ? alpha('#0e1520', 0.5) : '#fff' }}
+                    >
                       <MenuItem value="All Agents">All Agents</MenuItem>
                       <MenuItem value="Unassigned">Unassigned</MenuItem>
                       <MenuItem value="John">John</MenuItem>
@@ -330,15 +342,17 @@ export default function Dashboard() {
                     </Select>
                   </FormControl>
 
-                  <FormControl size="small" sx={{ ...selectSx, minWidth: 140 }}>
+                  <FormControl size="small" fullWidth sx={{ gridColumn: { xs: '1 / -1', sm: 'auto' } }}>
                     <InputLabel>Sort</InputLabel>
-                    <Select value={sort} label="Sort" onChange={(e: SelectChangeEvent) => { setSort(e.target.value); setPage(1); }}>
+                    <Select value={sort} label="Sort" onChange={(e: SelectChangeEvent) => { setSort(e.target.value); setPage(1); }}
+                      sx={{ bgcolor: isDark ? alpha('#0e1520', 0.5) : '#fff' }}
+                    >
                       <MenuItem value="latest">Latest First</MenuItem>
                       <MenuItem value="oldest">Oldest First</MenuItem>
                       <MenuItem value="priority">Priority ↓</MenuItem>
                     </Select>
                   </FormControl>
-                </Stack>
+                </Box>
               </Stack>
 
               <ToggleButtonGroup
@@ -347,7 +361,7 @@ export default function Dashboard() {
                 onChange={handleStatusChange}
                 size="small"
                 sx={{
-                  mt: 2,
+                  mt: 1.5,
                   display: 'flex',
                   flexWrap: 'wrap',
                   gap: 0.75,
@@ -355,9 +369,9 @@ export default function Dashboard() {
                     border: `1px solid ${theme.palette.divider} !important`,
                     borderRadius: '8px !important',
                     mx: '0 !important',
-                    px: 1.75,
+                    px: { xs: 1.25, sm: 1.75 },
                     py: 0.6,
-                    fontSize: '0.75rem',
+                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
                     fontWeight: 500,
                     textTransform: 'none',
                     color: 'text.secondary',
@@ -393,11 +407,13 @@ export default function Dashboard() {
             {!loading && totalPages > 1 && (
               <Box
                 sx={{
-                  px: 2.5,
+                  px: { xs: 1.5, sm: 2.5 },
                   py: 1.75,
                   display: 'flex',
+                  flexDirection: { xs: 'column', sm: 'row' },
                   justifyContent: 'space-between',
                   alignItems: 'center',
+                  gap: 1,
                   borderTop: `1px solid ${theme.palette.divider}`,
                   bgcolor: isDark ? alpha('#0e1520', 0.35) : alpha('#fafbfc', 0.7),
                 }}

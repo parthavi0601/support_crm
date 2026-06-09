@@ -209,7 +209,7 @@ export default function AiAssistant({ subject, description, notes, onApplyPriori
               '&:disabled': { opacity: 0.6 },
             }}
           >
-            {loading ? 'Analyzing…' : result ? 'Re-analyze' : '✨ Analyze with AI'}
+            {loading ? 'Analyzing…' : result ? 'Re-analyze' : ' Analyze with AI'}
           </Button>
 
           {/* Skeleton loading state */}
