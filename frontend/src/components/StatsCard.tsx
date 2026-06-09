@@ -1,6 +1,10 @@
 import React from 'react';
 import { Box, Typography, useTheme, alpha } from '@mui/material';
 
+/** Fixed vintage ticket dimensions — all dashboard stat cards share this exact size */
+export const VINTAGE_TICKET_HEIGHT = 96;
+export const VINTAGE_TICKET_STUB_WIDTH = 56;
+
 interface StatsCardProps {
   label: string;
   value: number;
@@ -10,73 +14,164 @@ interface StatsCardProps {
   variant?: 'default' | 'dashboard';
 }
 
-export default function StatsCard({ label, value, icon, color, trend, variant = 'default' }: StatsCardProps) {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
-  const palette = theme.palette[color];
+function VintageTicketCard({
+  label,
+  value,
+  icon,
+  palette,
+  trend,
+  isDark,
+  paperBg,
+  pageBg,
+  divider,
+}: {
+  label: string;
+  value: number;
+  icon: React.ReactNode;
+  palette: { main: string };
+  trend?: string;
+  isDark: boolean;
+  paperBg: string;
+  pageBg: string;
+  divider: string;
+}) {
+  const stubBg = isDark
+    ? alpha(palette.main, 0.12)
+    : alpha(palette.main, 0.07);
+  const vintagePaper = isDark ? paperBg : '#fdfbf7';
 
-  if (variant === 'dashboard') {
-    return (
+  const notchSx = {
+    content: '""',
+    position: 'absolute' as const,
+    top: '50%',
+    width: 14,
+    height: 14,
+    borderRadius: '50%',
+    bgcolor: pageBg,
+    border: `1px solid ${divider}`,
+    transform: 'translateY(-50%)',
+    zIndex: 3,
+  };
+
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: '100%',
+        minWidth: 0,
+        height: VINTAGE_TICKET_HEIGHT,
+        boxSizing: 'border-box',
+        filter: isDark
+          ? 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))'
+          : 'drop-shadow(0 2px 6px rgba(26,35,50,0.08))',
+      }}
+    >
       <Box
         sx={{
           position: 'relative',
-          p: 2.25,
-          pl: 2.75,
-          borderRadius: 2.5,
-          backgroundColor: theme.palette.background.paper,
-          border: `1px solid ${theme.palette.divider}`,
-          boxShadow: isDark
-            ? '0 1px 0 rgba(255,255,255,0.04) inset, 0 4px 20px rgba(0,0,0,0.25)'
-            : '0 1px 0 rgba(255,255,255,0.8) inset, 0 4px 20px rgba(26,35,50,0.04)',
-          height: '100%',
           width: '100%',
-          flex: 1,
+          maxWidth: '100%',
+          minWidth: 0,
+          height: VINTAGE_TICKET_HEIGHT,
+          boxSizing: 'border-box',
           display: 'flex',
-          alignItems: 'center',
-          gap: 2,
-          overflow: 'hidden',
+          borderRadius: '6px',
+          bgcolor: vintagePaper,
+          border: `1px solid ${isDark ? divider : alpha(palette.main, 0.18)}`,
+          overflow: 'visible',
+          backgroundImage: isDark
+            ? `repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                ${alpha('#fff', 0.015)} 2px,
+                ${alpha('#fff', 0.015)} 4px
+              )`
+            : `repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                ${alpha('#000', 0.012)} 2px,
+                ${alpha('#000', 0.012)} 4px
+              )`,
           '&::before': {
-            content: '""',
-            position: 'absolute',
-            left: 0,
-            top: '18%',
-            bottom: '18%',
-            width: 3,
-            borderRadius: '0 3px 3px 0',
-            bgcolor: palette.main,
+            ...notchSx,
+            left: -7,
+            borderRightColor: 'transparent',
+            boxShadow: `inset -2px 0 0 ${alpha(palette.main, 0.15)}`,
+          },
+          '&::after': {
+            ...notchSx,
+            right: -7,
+            borderLeftColor: 'transparent',
+            boxShadow: `inset 2px 0 0 ${alpha(palette.main, 0.15)}`,
           },
         }}
       >
+        {/* Stub */}
         <Box
           sx={{
-            width: 42,
-            height: 42,
-            borderRadius: 2,
+            width: VINTAGE_TICKET_STUB_WIDTH,
+            flexShrink: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            flexShrink: 0,
-            background: isDark
-              ? `linear-gradient(135deg, ${alpha(palette.main, 0.22)} 0%, ${alpha(palette.main, 0.08)} 100%)`
-              : `linear-gradient(135deg, ${alpha(palette.main, 0.14)} 0%, ${alpha(palette.main, 0.06)} 100%)`,
-            color: palette.main,
-            border: `1px solid ${alpha(palette.main, isDark ? 0.2 : 0.12)}`,
-            '& .MuiSvgIcon-root': { fontSize: 20 },
+            bgcolor: stubBg,
+            borderRight: `2px dashed ${alpha(palette.main, isDark ? 0.35 : 0.28)}`,
+            borderRadius: '6px 0 0 6px',
+            position: 'relative',
           }}
         >
-          {icon}
+          <Box
+            sx={{
+              width: 34,
+              height: 34,
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              bgcolor: isDark ? alpha(palette.main, 0.2) : alpha(palette.main, 0.12),
+              color: palette.main,
+              border: `1.5px solid ${alpha(palette.main, 0.35)}`,
+              '& .MuiSvgIcon-root': { fontSize: 18 },
+            }}
+          >
+            {icon}
+          </Box>
         </Box>
-        <Box sx={{ minWidth: 0 }}>
+
+        {/* Body */}
+        <Box
+          sx={{
+            flex: '1 1 0',
+            px: 1.75,
+            py: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            minWidth: 0,
+            width: 0,
+            height: VINTAGE_TICKET_HEIGHT,
+            overflow: 'hidden',
+          }}
+        >
           <Typography
             variant="caption"
+            noWrap
             sx={{
               color: 'text.secondary',
-              fontWeight: 500,
-              fontSize: '0.6875rem',
+              fontWeight: 600,
+              fontSize: '0.625rem',
               textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              display: 'block',
+              letterSpacing: '0.08em',
+              lineHeight: 1.25,
+              height: 16,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
               mb: 0.35,
+              fontFamily: '"Inter", sans-serif',
+              display: 'block',
             }}
           >
             {label}
@@ -86,17 +181,59 @@ export default function StatsCard({ label, value, icon, color, trend, variant = 
             fontWeight={700}
             letterSpacing="-0.04em"
             lineHeight={1}
-            sx={{ color: 'text.primary', fontFeatureSettings: '"tnum"' }}
+            sx={{
+              color: 'text.primary',
+              fontFeatureSettings: '"tnum"',
+              fontFamily: '"Inter", ui-monospace, monospace',
+              fontSize: '1.75rem',
+            }}
           >
             {value ?? 0}
           </Typography>
           {trend && (
-            <Typography variant="caption" sx={{ color: palette.main, fontWeight: 500, mt: 0.5, display: 'block' }}>
+            <Typography variant="caption" sx={{ color: palette.main, fontWeight: 500, mt: 0.5 }}>
               {trend}
             </Typography>
           )}
         </Box>
+
+        {/* Corner perforation dots */}
+        <Box
+          sx={{
+            position: 'absolute',
+            right: 10,
+            top: 8,
+            bottom: 8,
+            width: 3,
+            backgroundImage: `radial-gradient(circle, ${alpha(palette.main, 0.25)} 1px, transparent 1px)`,
+            backgroundSize: '3px 6px',
+            opacity: 0.6,
+            pointerEvents: 'none',
+          }}
+        />
       </Box>
+    </Box>
+  );
+}
+
+export default function StatsCard({ label, value, icon, color, trend, variant = 'default' }: StatsCardProps) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const palette = theme.palette[color];
+
+  if (variant === 'dashboard') {
+    return (
+      <VintageTicketCard
+        label={label}
+        value={value}
+        icon={icon}
+        palette={palette}
+        trend={trend}
+        isDark={isDark}
+        paperBg={theme.palette.background.paper}
+        pageBg={theme.palette.background.default}
+        divider={theme.palette.divider}
+      />
     );
   }
 

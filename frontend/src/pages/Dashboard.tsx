@@ -196,19 +196,31 @@ export default function Dashboard() {
         </Button>
       </Box>
 
-      {/* Stats */}
-      <Grid container spacing={2} sx={{ mb: 3 }} alignItems="stretch">
+      {/* Stats — equal-width columns so every ticket is identical size */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, minmax(0, 1fr))',
+            md: 'repeat(4, minmax(0, 1fr))',
+          },
+          gap: 2,
+          mb: 3,
+          width: '100%',
+        }}
+      >
         {[
           { label: 'Total Tickets', value: stats.Total, color: 'primary' as const, icon: <ConfirmationNumberIcon /> },
           { label: 'Open', value: stats.Open, color: 'warning' as const, icon: <ErrorOutlineIcon /> },
           { label: 'In Progress', value: stats['In Progress'], color: 'secondary' as const, icon: <AutorenewIcon /> },
           { label: 'Closed', value: stats.Closed, color: 'success' as const, icon: <CheckCircleOutlineIcon /> },
         ].map((card) => (
-          <Grid item xs={12} sm={6} md={3} key={card.label} sx={{ display: 'flex' }}>
+          <Box key={card.label} sx={{ width: '100%', minWidth: 0 }}>
             <StatsCard {...card} variant="dashboard" />
-          </Grid>
+          </Box>
         ))}
-      </Grid>
+      </Box>
 
       <Grid container spacing={2.5}>
         {/* Tickets panel */}
