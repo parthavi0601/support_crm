@@ -29,33 +29,21 @@ const DRAWER_WIDTH = 256;
 interface SidebarProps {
   mode: PaletteMode;
   toggleColorMode: () => void;
+  mobileOpen?: boolean;
+  onClose?: () => void;
 }
 
 const NAV_ITEMS = [
   { label: 'Dashboard', to: '/', icon: <DashboardIcon sx={{ fontSize: 20 }} />, end: true },
 ];
 
-export default function Sidebar({ mode, toggleColorMode }: SidebarProps) {
+export default function Sidebar({ mode, toggleColorMode, mobileOpen = false, onClose }: SidebarProps) {
   const theme = useTheme();
   const nav = useNavigate();
   const isDark = mode === 'dark';
 
-  return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: DRAWER_WIDTH,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: DRAWER_WIDTH,
-          boxSizing: 'border-box',
-          backgroundColor: theme.palette.background.paper,
-          borderRight: `1px solid ${theme.palette.divider}`,
-          display: 'flex',
-          flexDirection: 'column',
-        },
-      }}
-    >
+  const drawerContent = (
+    <>
       <Box sx={{ px: 2.5, py: 3, display: 'flex', alignItems: 'center', gap: 1.75 }}>
         <Box
           sx={{
@@ -113,6 +101,7 @@ export default function Sidebar({ mode, toggleColorMode }: SidebarProps) {
                 component={NavLink}
                 to={item.to}
                 end={item.end}
+                onClick={onClose} // close mobile drawer when nav clicked
                 sx={{
                   borderRadius: 2.5,
                   px: 1.5,
@@ -150,7 +139,7 @@ export default function Sidebar({ mode, toggleColorMode }: SidebarProps) {
             fullWidth
             variant="contained"
             startIcon={<AddIcon sx={{ fontSize: 16 }} />}
-            onClick={() => nav('/create')}
+            onClick={() => { nav('/create'); onClose && onClose(); }}
             sx={{
               py: 1.1,
               fontSize: '0.8125rem',
@@ -198,6 +187,50 @@ export default function Sidebar({ mode, toggleColorMode }: SidebarProps) {
           </Tooltip>
         </Box>
       </Box>
-    </Drawer>
+    </>
+  );
+
+  return (
+    <Box component="nav" sx={{ width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 } }}>
+      {/* Mobile Drawer */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={onClose}
+        ModalProps={{ keepMounted: true }} // Better open performance on mobile
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: DRAWER_WIDTH,
+            backgroundColor: theme.palette.background.paper,
+            borderRight: `1px solid ${theme.palette.divider}`,
+            display: 'flex',
+            flexDirection: 'column',
+          },
+        }}
+      >
+        {drawerContent}
+      </Drawer>
+
+      {/* Desktop Drawer */}
+      <Drawer
+        variant="permanent"
+        sx={{
+          display: { xs: 'none', md: 'block' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: DRAWER_WIDTH,
+            backgroundColor: theme.palette.background.paper,
+            borderRight: `1px solid ${theme.palette.divider}`,
+            display: 'flex',
+            flexDirection: 'column',
+          },
+        }}
+        open
+      >
+        {drawerContent}
+      </Drawer>
+    </Box>
   );
 }

@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { ThemeProvider, createTheme, CssBaseline, PaletteMode, Box } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, PaletteMode, Box, IconButton, Typography } from '@mui/material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 
 import Dashboard from './pages/Dashboard';
 import CreateTicket from './pages/CreateTicket';
@@ -10,6 +11,8 @@ import Sidebar from './components/Sidebar';
 import './App.css';
 
 export default function App() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  
   const [mode, setMode] = useState<PaletteMode>(() => {
     const saved = localStorage.getItem('theme');
     return (saved as PaletteMode) || 'dark';
@@ -287,12 +290,42 @@ export default function App() {
           sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}
           data-theme={mode}
         >
-          <Sidebar mode={mode} toggleColorMode={colorMode.toggleColorMode} />
+          <Sidebar 
+            mode={mode} 
+            toggleColorMode={colorMode.toggleColorMode} 
+            mobileOpen={mobileOpen}
+            onClose={() => setMobileOpen(false)}
+          />
           <Box
             component="main"
             className="app-main"
-            sx={{ flexGrow: 1, overflow: 'auto', minHeight: '100vh' }}
+            sx={{ flexGrow: 1, overflow: 'auto', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
           >
+            {/* Mobile Header */}
+            <Box 
+              sx={{ 
+                display: { xs: 'flex', md: 'none' }, 
+                px: 2, 
+                py: 1.5, 
+                alignItems: 'center', 
+                borderBottom: `1px solid ${theme.palette.divider}`,
+                bgcolor: 'background.paper'
+              }}
+            >
+              <IconButton 
+                color="inherit" 
+                aria-label="open drawer" 
+                edge="start" 
+                onClick={() => setMobileOpen(true)}
+                sx={{ mr: 2 }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, fontSize: '1.1rem' }}>
+                SupportDesk
+              </Typography>
+            </Box>
+
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/create" element={<CreateTicket />} />
