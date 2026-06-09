@@ -6,7 +6,6 @@ import { ThemeProvider, createTheme, CssBaseline, PaletteMode, Box } from '@mui/
 import Dashboard from './pages/Dashboard';
 import CreateTicket from './pages/CreateTicket';
 import TicketDetail from './pages/TicketDetail';
-import Analytics from './pages/Analytics';
 import Sidebar from './components/Sidebar';
 import './App.css';
 
@@ -66,14 +65,14 @@ export default function App() {
             dark: '#2563eb',
           },
           background: {
-            default: mode === 'light' ? '#f4f6f9' : '#0a0e17',
-            paper: mode === 'light' ? '#ffffff' : '#121a27',
+            default: mode === 'light' ? '#f4f6f9' : '#0a0a0a',
+            paper: mode === 'light' ? '#ffffff' : '#111111',
           },
           text: {
-            primary: mode === 'light' ? '#1a2332' : '#e8edf4',
-            secondary: mode === 'light' ? '#5c6b7f' : '#8b9cb3',
+            primary: mode === 'light' ? '#1a2332' : '#f0f0f0',
+            secondary: mode === 'light' ? '#5c6b7f' : '#888888',
           },
-          divider: mode === 'light' ? '#e8ecf1' : '#1e2a3a',
+          divider: mode === 'light' ? '#e8ecf1' : '#222222',
           action: {
             hover: mode === 'light' ? 'rgba(26, 35, 50, 0.04)' : 'rgba(255, 255, 255, 0.04)',
             selected: mode === 'light' ? 'rgba(91, 108, 240, 0.08)' : 'rgba(91, 108, 240, 0.12)',
@@ -111,10 +110,10 @@ export default function App() {
                 '&:hover': { backgroundColor: '#4a59d9' },
               },
               outlined: {
-                borderColor: mode === 'light' ? '#d8dee8' : '#2a3a4f',
+                borderColor: mode === 'light' ? '#d8dee8' : '#2a2a2a',
                 '&:hover': {
-                  borderColor: mode === 'light' ? '#c5cdd9' : '#3a4d66',
-                  backgroundColor: mode === 'light' ? 'rgba(26,35,50,0.03)' : 'rgba(255,255,255,0.03)',
+                  borderColor: mode === 'light' ? '#c5cdd9' : '#3a3a3a',
+                  backgroundColor: mode === 'light' ? 'rgba(26,35,50,0.03)' : 'rgba(255,255,255,0.04)',
                 },
               },
               outlinedPrimary: {
@@ -131,10 +130,10 @@ export default function App() {
                 backgroundImage: 'none',
               },
               outlined: {
-                border: `1px solid ${mode === 'light' ? '#e8ecf1' : '#1e2a3a'}`,
+                border: `1px solid ${mode === 'light' ? '#e8ecf1' : '#222222'}`,
                 boxShadow: mode === 'light'
                   ? '0 1px 2px rgba(26, 35, 50, 0.04)'
-                  : '0 1px 2px rgba(0, 0, 0, 0.2)',
+                  : '0 1px 2px rgba(0, 0, 0, 0.4)',
               },
             },
           },
@@ -149,8 +148,8 @@ export default function App() {
           MuiDrawer: {
             styleOverrides: {
               paper: {
-                borderRight: `1px solid ${mode === 'light' ? '#e8ecf1' : '#1e2a3a'}`,
-                backgroundColor: mode === 'light' ? '#ffffff' : '#0e1520',
+                borderRight: `1px solid ${mode === 'light' ? '#e8ecf1' : '#1e1e1e'}`,
+                backgroundColor: mode === 'light' ? '#ffffff' : '#0d0d0d',
               },
             },
           },
@@ -195,9 +194,9 @@ export default function App() {
                   fontSize: '0.6875rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.06em',
-                  color: mode === 'light' ? '#8b9cb3' : '#6b7d94',
-                  backgroundColor: mode === 'light' ? '#fafbfc' : '#0e1520',
-                  borderBottom: `1px solid ${mode === 'light' ? '#e8ecf1' : '#1e2a3a'}`,
+                  color: mode === 'light' ? '#8b9cb3' : '#666666',
+                  backgroundColor: mode === 'light' ? '#fafbfc' : '#0d0d0d',
+                  borderBottom: `1px solid ${mode === 'light' ? '#e8ecf1' : '#1e1e1e'}`,
                   padding: '11px 20px',
                 },
               },
@@ -208,7 +207,7 @@ export default function App() {
               root: {
                 '&:last-child td': { border: 0 },
                 '&.MuiTableRow-hover:hover': {
-                  backgroundColor: mode === 'light' ? 'rgba(91,108,240,0.03)' : 'rgba(91,108,240,0.06)',
+                  backgroundColor: mode === 'light' ? 'rgba(91,108,240,0.03)' : 'rgba(91,108,240,0.08)',
                 },
               },
             },
@@ -216,7 +215,7 @@ export default function App() {
           MuiTableCell: {
             styleOverrides: {
               root: {
-                borderBottom: `1px solid ${mode === 'light' ? '#f0f3f7' : '#1a2433'}`,
+                borderBottom: `1px solid ${mode === 'light' ? '#f0f3f7' : '#1a1a1a'}`,
                 padding: '14px 20px',
                 fontSize: '0.8125rem',
               },
@@ -226,15 +225,15 @@ export default function App() {
             styleOverrides: {
               root: {
                 borderRadius: 10,
-                backgroundColor: mode === 'light' ? '#fafbfc' : '#0e1520',
+                backgroundColor: mode === 'light' ? '#fafbfc' : '#161616',
                 '& fieldset': {
-                  borderColor: mode === 'light' ? '#e8ecf1' : '#1e2a3a',
+                  borderColor: mode === 'light' ? '#e8ecf1' : '#2a2a2a',
                 },
                 '&:hover fieldset': {
-                  borderColor: mode === 'light' ? '#d8dee8' : '#2a3a4f',
+                  borderColor: mode === 'light' ? '#d8dee8' : '#3a3a3a',
                 },
                 '&.Mui-focused': {
-                  backgroundColor: mode === 'light' ? '#ffffff' : '#121a27',
+                  backgroundColor: mode === 'light' ? '#ffffff' : '#1a1a1a',
                 },
                 '&.Mui-focused fieldset': {
                   borderColor: '#5b6cf0',
@@ -256,7 +255,7 @@ export default function App() {
           MuiDivider: {
             styleOverrides: {
               root: {
-                borderColor: mode === 'light' ? '#e8ecf1' : '#1e2a3a',
+                borderColor: mode === 'light' ? '#e8ecf1' : '#1e1e1e',
               },
             },
           },
@@ -272,10 +271,10 @@ export default function App() {
             styleOverrides: {
               paper: {
                 borderRadius: 14,
-                border: `1px solid ${mode === 'light' ? '#e8ecf1' : '#1e2a3a'}`,
+                border: `1px solid ${mode === 'light' ? '#e8ecf1' : '#222222'}`,
                 boxShadow: mode === 'light'
                   ? '0 20px 40px rgba(26, 35, 50, 0.12)'
-                  : '0 20px 40px rgba(0, 0, 0, 0.5)',
+                  : '0 20px 40px rgba(0, 0, 0, 0.7)',
               },
             },
           },
@@ -302,7 +301,6 @@ export default function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/create" element={<CreateTicket />} />
               <Route path="/ticket/:ticketId" element={<TicketDetail />} />
-              <Route path="/analytics" element={<Analytics />} />
             </Routes>
           </Box>
         </Box>

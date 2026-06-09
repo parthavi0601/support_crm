@@ -24,6 +24,7 @@ import { getTicketById, updateTicket } from '../services/api';
 import { Ticket, Note, Activity } from '../types';
 import ConfirmDialog from '../components/ConfirmDialog';
 import ActivityTimeline from '../components/Timeline';
+import AiAssistant from '../components/AiAssistant';
 
 const STATUS_OPTIONS = ['Open', 'In Progress', 'Closed'];
 const PRIORITY_OPTIONS = ['Low', 'Medium', 'High', 'Critical'];
@@ -346,10 +347,18 @@ export default function TicketDetail() {
         </Grid>
 
         <Grid item xs={12} lg={4}>
-          <Paper
-            variant="outlined"
-            sx={{ borderRadius: 3, overflow: 'hidden', position: 'sticky', top: 24 }}
-          >
+          <Stack spacing={2.5}>
+            <AiAssistant
+              subject={ticket.subject}
+              description={ticket.description}
+              notes={notes}
+              onApplyPriority={(p) => setPriority(p)}
+            />
+
+            <Paper
+              variant="outlined"
+              sx={{ borderRadius: 3, overflow: 'hidden', position: 'sticky', top: 24 }}
+            >
             <PanelHeader title="Update Ticket" />
             <Box sx={{ p: 3 }}>
               <TextField
@@ -418,7 +427,8 @@ export default function TicketDetail() {
                 Save Changes
               </Button>
             </Box>
-          </Paper>
+            </Paper>
+          </Stack>
         </Grid>
       </Grid>
 

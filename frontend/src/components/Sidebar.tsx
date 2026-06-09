@@ -19,10 +19,9 @@ import {
 import {
   Dashboard as DashboardIcon,
   Add as AddIcon,
-  BarChart as BarChartIcon,
   Brightness4 as Brightness4Icon,
   Brightness7 as Brightness7Icon,
-  SupportAgent as SupportAgentIcon,
+  HeadsetMic as HeadsetMicIcon,
 } from '@mui/icons-material';
 
 const DRAWER_WIDTH = 256;
@@ -34,8 +33,6 @@ interface SidebarProps {
 
 const NAV_ITEMS = [
   { label: 'Dashboard', to: '/', icon: <DashboardIcon sx={{ fontSize: 20 }} />, end: true },
-  { label: 'New Ticket', to: '/create', icon: <AddIcon sx={{ fontSize: 20 }} />, end: false },
-  { label: 'Analytics', to: '/analytics', icon: <BarChartIcon sx={{ fontSize: 20 }} />, end: false },
 ];
 
 export default function Sidebar({ mode, toggleColorMode }: SidebarProps) {
@@ -72,7 +69,7 @@ export default function Sidebar({ mode, toggleColorMode }: SidebarProps) {
             flexShrink: 0,
           }}
         >
-          <SupportAgentIcon sx={{ color: '#fff', fontSize: 19 }} />
+          <HeadsetMicIcon sx={{ color: '#fff', fontSize: 19 }} />
         </Box>
         <Box>
           <Typography

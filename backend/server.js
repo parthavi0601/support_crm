@@ -4,6 +4,8 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const ticketRoutes = require('./routes/ticketRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const aiRoutes = require('./routes/aiRoutes');
+const { startEmailPoller } = require('./services/emailPoller');
 
 connectDB();
 
@@ -15,6 +17,7 @@ app.use(express.json());
 // Routes
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'CRM API is running' });
@@ -32,4 +35,6 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  // Start Gmail email poller after server is up
+  startEmailPoller();
 });

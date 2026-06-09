@@ -22,4 +22,14 @@ export const getRecentActivity = () => api.get<Activity[]>('/tickets/activity');
 
 export const getAnalytics = () => api.get<AnalyticsData>('/analytics');
 
+export interface AiAnalysisResult {
+  summary: string;
+  priority: { priority: string; reason: string };
+  response: string;
+  category: { category: string; confidence: string };
+}
+
+export const analyzeTicket = (data: { subject: string; description: string; notes?: { noteText: string }[] }) =>
+  api.post<AiAnalysisResult>('/ai/analyze', data);
+
 export default api;
